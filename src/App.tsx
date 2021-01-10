@@ -1,26 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import Layout from './components/Layout';
+import AutomaticGrid from './components/AutomaticGrid';
+import { RootState } from './store';
+import { getProducts } from './store/ducks/product';
 
-function App() {
+const debounce = (func: any, time = 500) => {
+  let timeoutId: NodeJS.Timeout;
+  return function () {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    const context = this;
+    const args = arguments;
+    timeoutId = setTimeout(() => {
+      func.apply(context, args);
+    }, time);
+  };
+};
+
+export default function App() {
+  const [textToSearch, setTextToSearch] = useState<string | undefined>();
+  const dispatch = useDispatch();
+  const { products: productSelector } = useSelector((store: RootState) => store);
+
+  useEffect(() => {
+    if (!textToSearch || (textToSearch && textToSearch.length > 2))
+      dispatch(getProducts(textToSearch));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textToSearch]);
+
+  const searchDebounced = debounce((pattern: string) => {
+    setTextToSearch(pattern);
+  });
+
+  const handleOnChangeAction = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // @ts-ignore
+    searchDebounced(event.target.value);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout onSearch={handleOnChangeAction}>
+      <AutomaticGrid columns={3} content={productSelector.productData} />
+    </Layout>
   );
 }
-
-export default App;
