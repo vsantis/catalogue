@@ -26,7 +26,7 @@ export default function App() {
 
   useEffect(() => {
     if (!textToSearch || (textToSearch && textToSearch.length > 2))
-      dispatch(getProducts(textToSearch));
+      dispatch(getProducts(textToSearch ? textToSearch.toLowerCase() : textToSearch));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textToSearch]);
 
