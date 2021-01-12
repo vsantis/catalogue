@@ -29,13 +29,7 @@ export default function AutomaticGrid(props: Props) {
           props.content.map((content, index) => {
             return (
               <Grid item xs={columnSize} key={index}>
-                <ProductCard
-                  brand={content.brand}
-                  productName={content.name}
-                  description={content.description}
-                  price={content.price.toString()}
-                  imageUrl={content.image}
-                />
+                <ProductCard content={content} />
               </Grid>
             );
           })

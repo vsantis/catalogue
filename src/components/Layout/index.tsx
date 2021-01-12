@@ -1,7 +1,10 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, InputBase, Container } from '@material-ui/core';
-import { Search as SearchIcon } from '@material-ui/icons';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppBar, Toolbar, Typography, InputBase, Container, IconButton } from '@material-ui/core';
+import { Search as SearchIcon, Add as AddIcon } from '@material-ui/icons';
 import styles from './style';
+import FormDialog from '../FormDialog';
+import { saveProducts } from '../../store/ducks/product';
 
 type Props = {
   children: JSX.Element;
@@ -10,6 +13,21 @@ type Props = {
 
 export default function Layout(props: Props) {
   const classes = styles();
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleClickOpenForm = () => {
+    setOpen(true);
+  };
+
+  const handleClickCloseForm = () => {
+    setOpen(false);
+  };
+
+  const handleOnSubmit = (data: any) => {
+    dispatch(saveProducts(data));
+    setOpen(false);
+  };
 
   return (
     <div className={classes.grow}>
@@ -33,9 +51,18 @@ export default function Layout(props: Props) {
             />
           </div>
           <div className={classes.grow} />
+          <IconButton color='inherit' size='medium' onClick={handleClickOpenForm}>
+            <AddIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Container maxWidth='md' className={classes.container}>
+        <FormDialog
+          type='create'
+          open={open}
+          onClose={handleClickCloseForm}
+          onSubmit={handleOnSubmit}
+        />
         {props.children}
       </Container>
     </div>
